@@ -153,6 +153,8 @@ def download_images(request, post_id):
 #Start of Upload Image
 @login_required(login_url='login')
 def upload_image(request):
+    user_object = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user_object)
     kategori = Kategori.objects.all()
     lisensi = Lisensi.objects.all()
 
@@ -185,7 +187,7 @@ def upload_image(request):
 
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
-        return render(request, 'upload/upload_image.html', {'kategori': kategori, 'lisensi': lisensi})
+        return render(request, 'upload/upload_image.html', {'kategori': kategori, 'lisensi': lisensi, 'profile': profile})
 #End Of Upload Image
 
 #Start of Update Image
