@@ -1,0 +1,42 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+{% include 'layouts/navbar.html' %}
+    <div class="container-fluid">
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="row g-2 m-1" data-masonry='{"percentPosition": true }'>
+                  <h3>Post Gambar</h3>
+                    {% for postImage in post %}
+                    {% comment %} //card start {% endcomment %}
+                    <div class="col-4">
+                      {% include "card_post/card_image.html" %}
+                      {% comment %} //modal end {% endcomment %}
+                    {% endfor %}
+                    
+                    <h3>Post Video</h3>
+                    {% comment %} Video {% endcomment %}
+                    {% for video in video %}
+                    {% comment %} //card start {% endcomment %}
+                    <div class="col-4">
+                        {% include "card_post/card_video.html" %}
+                      {% comment %} //modal end {% endcomment %}
+                    {% endfor %}
+                    
+                    <h3>Post Modul</h3>
+                    {% for modul in modul %}
+                    {% comment %} //card start {% endcomment %}
+                    <div class="col-4">
+                      {% include "card_post/card_modul.html" %}
+                    {% endfor %}
+
+                    
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
+{% include 'layouts/footer.html' %} 
+{% endblock content %}

@@ -1,0 +1,106 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+{% include "layouts/navbar.html" %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-md-12">
+                <div class="card">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    <h5 class="card-header">Upload Konten Image</h5>
+                    <div class="card-body">
+                        <form action="" method="POST" enctype="multipart/form-data" class="row g-3">
+                            {% csrf_token %}
+                            <div class="col-6">
+                              <label for="judul" class="form-label">Judul</label>
+                              <input type="text" required value="{{post.judul}}" name="judul" class="form-control" id="judul">
+                            </div>
+                            <div class="col-6">
+                                <label for="thumbnail">Thumbnail</label>
+                                <input type="file" required onchange="previewImage()" id="image" class="form-control" value="{{post.thumbnail}}" name="thumbnail" id="thumbnail" multiple>
+                            </div>
+                            <div class="col-6">
+                              <label for="deskripsi" class="form-label">Deskripsi</label>
+                              <textarea class="form-control" required value="" name="deskripsi" rows="1">{{post.deskripsi}}</textarea>
+                            </div>
+                            <div class="col-6">
+                              <label for="images">Gambar</label>
+                              <input type="file" id="id_images" required class="form-control" value="{{images.image}}" name="images" multiple>
+                            </div>
+                            <div class="col-6">
+                              <label for="lisensi" class="form-label">Pilih Lisensi</label>
+                              <select class="form-select {% if lisensi.errors %}is-invalid{% endif %}" name="lisensi">
+                                {% for lisensi in lisensi %}
+                                    <option value="{{ lisensi.id }}" {% if lisensi.id  == post.lisensi_id %}selected{% endif %}>
+                                        {{ lisensi.nama_lisensi }}
+                                    </option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                            <div class="col-6">
+                              <label for="kategori" class="form-label">Pilih Kategori</label>
+                              <select class="form-select {% if kategori.errors %}is-invalid{% endif %}" name="kategori">
+                                {% for kategori in kategori %}
+                                <option value="{{ kategori.id }}" {% if post.kategori_id == kategori.id %}selected{% endif %}>{{ kategori.nama_kategori }}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                            <a href="https://creativecommons.or.id/lisensi-cc-bahasa-indonesia/">Cari tahu tentang
+                                lisensi Creative Commons</a>                            
+                            <div class="col-3">
+                                <h6>Thumbnail</h6>
+                                <img class="img-preview img-fluid" style="width: 175px; height: auto;">
+                            </div>
+                            <div class="col-9   ">
+                                <h6>Gambar Konten</h6>
+                                <div id="image-preview"></div>
+                            </div>
+                            <div align="center" class="col-12 mt-3">
+
+                              <button  type="submit" class="btn btn-primary w-100">Submit</button>
+                            </div>
+                          </form>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewImage() {
+            const image = document.querySelector('#image');
+            const imgPreview = document.querySelector('.img-preview');
+
+            imgPreview.style.display = 'block';
+
+            const oFReader = new FileReader();
+            oFReader.readAsDataURL(image.files[0]);
+
+            oFReader.onload = function(oFREvent) {
+                imgPreview.src = oFREvent.target.result;
+            }
+        }
+    </script>
+
+    <script>
+        document.getElementById('id_images').addEventListener('change', function (e) {
+         var preview = document.getElementById('image-preview');
+         preview.innerHTML = '';
+         for (var i = 0; i < e.target.files.length; i++) {
+            var img = document.createElement('img');
+            img.src = URL.createObjectURL(e.target.files[i]);
+            img.style.width = '175px';
+            img.style.height = 'auto';
+            preview.appendChild(img);
+         }
+        });
+    </script>
+
+{% endblock content %}

@@ -1,0 +1,33 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+{% include 'layouts/navbar.html' %}
+  
+    <div class="container-fluid">
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                Urutkan
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" href="?sort=latest">Terbaru</a></li>
+                <li><a class="dropdown-item" href="?sort=most_liked">Terbanyak Disukai</a></li>
+            </ul>
+        </div>    
+        <div class="row g-3">
+            <div class="col">
+                <div class="row g-2 m-1">
+                    {% for postImage in post %}
+                    {% comment %} //card start {% endcomment %}
+                    <div class="col-4">
+                      {% include "card_post/card_image.html" %}
+                      {% comment %} //modal end {% endcomment %}
+                    {% endfor %}
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
+{% include 'layouts/footer.html' %} 
+{% endblock content %}

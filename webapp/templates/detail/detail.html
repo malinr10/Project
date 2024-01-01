@@ -1,0 +1,51 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+{% include 'layouts/navbar.html' %}
+
+<div class="container ">
+    <h1 class="mb-5" >Detail Gambar</h1>
+    <div id="carouselExampleIndicators" class="carousel slide " data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {% for photo in photos %}
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></button>
+            {% endfor %}
+        </div>
+        <div class="carousel-inner">
+            {% for photo in photos %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <a href="{{photo.image.url}}"><img src="{{ photo.image.url }}" class="d-block img-thumbnail w-100" alt="{{ photo.title }}"></a>
+                </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <div class="p-md-5 mb-4 text-body-emphasis ">
+        <div class="col-lg-7 px-0">
+          <h5 class=" font-primary" style="font-size:50px; font-weight: 700; line-height: 50px;">{{post.judul}}</h5>
+          <strong style="font-size:25px; font-weight: 400; line-height: 50px;">Deskripsi</strong>
+          <p class="lead my-3" style="font-size:25px; font-weight: 400; line-height: 50px;">{{post.deskripsi}}</p>
+          
+          <p class="text-body-light"><i class="fa-solid fa-heart"></i>  {{post.no_of_like}} </p>
+          <a class="btn btn-primary" href="/like_post?post_id={{ post.id_post }}" role="button"><i class="fa-solid fa-heart"></i></a>
+          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-share"></i></button>
+          <a class="btn btn-primary" href="/like_post?post_id={{ post.id_post }}" role="button"><i class="fa-solid fa-download"></i></i></a>
+        </div>
+      </div>
+    
+      
+</div>
+
+
+
+  
+
+{% endblock content %}
+

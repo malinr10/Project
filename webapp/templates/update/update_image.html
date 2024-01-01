@@ -1,0 +1,92 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+{% include "layouts/navbar.html" %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-8 col-md-12">
+                <div class="card">
+                    <h5 class="card-header">Update Konten Image</h5>
+                    <div class="card-body">
+                        <form action="" method="POST" enctype="multipart/form-data" class="row g-3">
+                            {% csrf_token %}
+                            <div class="col-6">
+                              <label for="judul" class="form-label">Judul</label>
+                              <input type="text" value="{{post.judul}}" name="judul" class="form-control" id="judul">
+                            </div>
+                            <div class="col-6">
+                                <label for="thumbnail">Thumbnail</label>
+                                <input type="file" class="form-control" value="{{post.thumbnail}}" name="thumbnail" id="thumbnail" multiple>
+                            </div>
+                            <div class="col-6">
+                              <label for="deskripsi" class="form-label">Deskripsi</label>
+                              <textarea class="form-control" value="" name="deskripsi" rows="1">{{post.deskripsi}}</textarea>
+                            </div>
+                            <div class="col-6">
+                              <label for="images">Gambar</label>
+                              <input type="file" class="form-control" value="{{images.image}}" name="images" id="images" multiple>
+                            </div>
+                            <div class="col-6">
+                                <label for="kategori" class="form-label">Kategori Terdaftar</label>
+                                <input disabled type="text" value="{{post.kategori_id}}" name="kategori" class="form-control" id="kategori">
+                              </div>
+                            <div class="col-6">
+                              <label for="kategori" class="form-label">Pilih Kategori</label>
+                              <select class="form-select {% if kategori.errors %}is-invalid{% endif %}" name="kategori">
+                                {% for kategori in kategori %}
+                                <option value="{{ kategori.id }}" {% if post.kategori_id == kategori.id %}selected{% endif %}>{{ kategori.nama_kategori }}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                            <div class="col-6">
+                                <label for="lisensi" class="form-label">Lisensi Terdaftar</label>
+                                <input disabled type="text" value="{{post.lisensi_id}}" name="lisensi" class="form-control" id="lisensi">
+                              </div>
+                            <div class="col-6">
+                              <label for="lisensi" class="form-label">Pilih Lisensi</label>
+                              <select class="form-select {% if lisensi.errors %}is-invalid{% endif %}" name="lisensi">
+                                {% for lisensi in lisensi %}
+                                    <option value="{{ lisensi.id }}" {% if lisensi.id  == post.lisensi_id %}selected{% endif %}>
+                                        {{ lisensi.nama_lisensi }}
+                                    </option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                            <a href="https://creativecommons.or.id/lisensi-cc-bahasa-indonesia/">Cari tahu tentang
+                                lisensi Creative Commons</a>                            
+                            <div class="col-3">
+                                <h6>Thumbnail</h6>
+                                <img src="{{post.thumbnail.url}}" alt="" class="m-2" width="175px" height="auto">
+                            </div>
+                            <div class="col-9   ">
+                                <h6>Gambar Konten</h6>
+                                {% for images in images %}
+                                    <img src="{{images.image.url}}" alt="" class="m-2" width="175px" height="auto">
+                                {% endfor %}
+                            </div>
+                            <div align="center" class="col-12 mt-3">
+
+                              <button  type="submit" class="btn btn-primary w-100">Submit</button>
+                            </div>
+                          </form>
+                        </div>
+                </div>
+            </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Tampilan Konten</h5>
+                        </div>
+                        <div class="card-body">
+                            {% comment %} //card start {% endcomment %}
+                            <div>
+                                {% include "card_post/card_image.html" %}
+                            {% comment %} //modal end {% endcomment %}
+                        </div>
+                    </div>
+                    
+                </div>
+        </div>
+    </div>
+
+{% endblock content %}
