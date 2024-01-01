@@ -3,8 +3,19 @@
 {% include "layouts/navbar.html" %}
 
     <div class="container">
-        <div class="row">
-            <div class="col-lg-12 col-md-12">
+      <ul class="nav nav-pills nav-fill">
+        <li class="nav-item ">
+          <a class="nav-link active" data-toggle="tab" aria-current="page" href="#profile">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#akun">Akun</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#password">Password</a>
+        </li>
+      </ul>
+        <div class="row tab-content">
+            <div id="profile" class="col-lg-12 col-md-12 tab-pane mt-3 in active ">
                 <div class="card">
                     <h5 class="card-header">Profile Setting</h5>
                     <div class="card-body">
@@ -43,12 +54,12 @@
                             </div>
                           </form>
                     </div>
-            </div>
-        </div>
+              </div>
+          </div>
 
-            <div class="col-lg-6 col-md-12 mt-4">
+            <div id="akun" class="col-lg-12 col-md-12 mt-4 tab-pane mt-3 ">
                 <div class="card">
-                    <h5 class="card-header">Account Setting</h5>
+                    <h5 class="card-header">Akun Setting</h5>
                     <div class="card-body">
                         <form action="{% url 'update_akun' %}" method="POST" class="row g-3">
                             {% csrf_token %}
@@ -67,9 +78,9 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-12 mt-4">
+            <div id="password" class="col-lg-12 col-md-12 mt-4 tab-pane mt-3 ">
                 <div class="card">
-                  <h5 class="card-header">Account Setting</h5>
+                  <h5 class="card-header">Password Setting</h5>
                   <div class="card-body">
                       <form action="{% url 'update_password' %}" method="POST" class="row g-3">
                           {% csrf_token %}

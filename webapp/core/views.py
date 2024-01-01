@@ -121,9 +121,11 @@ def homePage(request):
 #End of Home Page
 
 def detail(request, id):
+    user_object = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user_object)
     post = Post.objects.get(id_post=id)
     photos = PostImage.objects.filter(post=post)
-    return render(request, 'detail/detail.html', {'post': post, 'photos': photos})
+    return render(request, 'detail/detail.html', {'post': post, 'photos': photos, 'profile': profile})
 
 def download_images(request, post_id):
     post = Post.objects.get(id_post=post_id)
@@ -185,6 +187,8 @@ def upload_image(request):
 
 #Start of Update Image
 def update_image(request, post_id):
+    user_object = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user_object)
     kategori = Kategori.objects.all()
     lisensi = Lisensi.objects.all()
     post = Post.objects.get(id_post=post_id)
@@ -223,7 +227,7 @@ def update_image(request, post_id):
 
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
-        return render(request, 'update/update_image.html', {'post': post, 'images': images, 'kategori': kategori, 'lisensi': lisensi, 'postImage': postImage})
+        return render(request, 'update/update_image.html', {'post': post, 'images': images, 'kategori': kategori, 'lisensi': lisensi, 'postImage': postImage, 'profile': profile})
 #END of Update Image
 
 #Start of Delete Image
@@ -251,6 +255,8 @@ def delete_image(request, post_id):
 #END of Delete 
     
 def view_image(request):
+    user_object = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user_object)
     post = Post.objects.all()
 
     sort_option = request.GET.get('sort', 'latest')  # Default to sorting by latest
@@ -258,7 +264,7 @@ def view_image(request):
         post = Post.objects.all().order_by('-created_at')  
     elif sort_option == 'most_liked':
         post = Post.objects.all().order_by('-no_of_like')
-    return render(request, 'konten/gambar.html', {'post': post})
+    return render(request, 'konten/gambar.html', {'post': post, 'profile': profile})
 
 #End of CRUD Image
 
@@ -417,6 +423,8 @@ def get_youtube_video_id(url):
     return None
 
 def upload_video(request):
+    user_object = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user_object)
     kategori = Kategori.objects.all()
     lisensi = Lisensi.objects.all()
 
@@ -475,9 +483,11 @@ def upload_video(request):
                 messages.success(request, 'Konten Berhasil Diupload')
                 return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
-    return render(request, 'upload/upload_video.html', {'kategori': kategori, 'lisensi': lisensi})
+    return render(request, 'upload/upload_video.html', {'kategori': kategori, 'lisensi': lisensi, 'profile': profile})
 
 def update_video(request, video_id):
+    user_object = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user_object)
     kategori = Kategori.objects.all()
     lisensi = Lisensi.objects.all()
     video = PostVideo.objects.get(id=video_id)
@@ -524,7 +534,7 @@ def update_video(request, video_id):
 
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
-        return render(request, 'update/update_video.html', {'video': video, 'kategori': kategori, 'lisensi': lisensi})
+        return render(request, 'update/update_video.html', {'video': video, 'kategori': kategori, 'lisensi': lisensi, 'profile': profile})
 
 from django.core.files.storage import FileSystemStorage
 
@@ -572,6 +582,8 @@ def like_video(request):
         return redirect(referring_url)
     
 def view_video(request):
+    user_object = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user_object)
     video = PostVideo.objects.all()
 
     sort_option = request.GET.get('sort', 'latest')  # Default to sorting by latest
@@ -581,12 +593,14 @@ def view_video(request):
     elif sort_option == 'most_liked':
 
         video = PostVideo.objects.all().order_by('-no_of_like')
-    return render(request, 'konten/video.html', {'video': video})
+    return render(request, 'konten/video.html', {'video': video, 'profile': profile})
     
 #END CRUD VIDEO
 
 #CRUD Modul Dokumen
 def upload_modul(request):
+    user_object = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user_object)
     kategori = Kategori.objects.all()
     lisensi = Lisensi.objects.all()
 
@@ -619,9 +633,11 @@ def upload_modul(request):
             messages.success(request, 'Konten Berhasil Diupload')
             return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
-    return render(request, 'upload/upload_modul.html', {'kategori': kategori, 'lisensi': lisensi})
+    return render(request, 'upload/upload_modul.html', {'kategori': kategori, 'lisensi': lisensi, 'profile': profile})
 
 def update_modul(request, modul_id):
+    user_object = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user_object)
     kategori = Kategori.objects.all()
     lisensi = Lisensi.objects.all()
     modul = PostModul.objects.get(id=modul_id)
@@ -658,7 +674,7 @@ def update_modul(request, modul_id):
 
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
-        return render(request, 'update/update_modul.html', {'modul': modul, 'kategori': kategori, 'lisensi': lisensi})
+        return render(request, 'update/update_modul.html', {'modul': modul, 'kategori': kategori, 'lisensi': lisensi, 'profile': profile})
 
 def like_modul(request):
     referring_url = request.META.get('HTTP_REFERER')
@@ -699,17 +715,21 @@ def delete_modul(request, modul_id):
         return render(request, 'profile', {'modul': modul})
 
 def view_modul(request):
+    user_object = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user_object)
     modul = PostModul.objects.all()
     sort_option = request.GET.get('sort', 'latest')
     if sort_option == 'latest':
         modul = PostModul.objects.all().order_by('-created_at')
     elif sort_option == 'most_liked':
         modul = PostModul.objects.all().order_by('-no_of_like')
-    return render(request, 'konten/modul.html', {'modul': modul})
+    return render(request, 'konten/modul.html', {'modul': modul, 'profile': profile})
 #END CRUD Modul Dokeumen
 
 #searching konten
 def search_konten(request):
+    user_object = User.objects.get(username=request.user.username)
+    profile = Profile.objects.get(user=user_object)
     if request.method == 'POST':
         search = request.POST['search']
         post = Post.objects.filter(judul__icontains=search)
@@ -717,5 +737,5 @@ def search_konten(request):
         modul = PostModul.objects.filter(judul__icontains=search)
         images = PostImage.objects.filter(post__in=post)
         lisensi = Lisensi.objects.all()
-        return render(request, 'search.html', {'post': post, 'images': images, 'lisensi': lisensi, 'video': video, 'modul': modul})
+        return render(request, 'search.html', {'post': post, 'images': images, 'lisensi': lisensi, 'video': video, 'modul': modul, 'profile': profile})
 #end search

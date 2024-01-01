@@ -4,95 +4,68 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-lg-8 col-md-12">
-            <div class="card mb-3">
-                <div class="row g-0">
-                  <div class="col-md-4 ">
-                    <div class="text-center border-end p-3">
-                        <img src="{{profile.profile_image.url}}" class="img-fluid avatar-xxl rounded-circle" alt="">
-                        <h4 class="text-primary font-size-20 mt-3 mb-2">{{profile.nama_lengkap}}</h4>
-                        <h5 class="text-muted font-size-13 mb-0">{{user.email}}r</h5>
-                    </div>
-                  </div>
-                  <div class="col-md-8">
-                    <div class="card-body">
-                      <h5 class="card-title">Card title</h5>
-                      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                      <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                    </div>
-                  </div>
+        <div class="col-4">
+            <div class="card" style="width: 18rem;">
+                <img src="{{ profile.profile_image.url }}" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">Card title</h5>
+                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">An item</li>
+                  <li class="list-group-item">A second item</li>
+                  <li class="list-group-item">A third item</li>
+                </ul>
+                <div class="card-body">
+                  <a href="#" class="card-link">Card link</a>
+                  <a href="#" class="card-link">Another link</a>
                 </div>
               </div>
         </div>
 
-        <ul class="nav nav-tabs">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Active</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Dropdown</a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Separated link</a></li>
+        <div class="col-8">
+            <ul class="nav nav-pills nav-fill">
+                <li class="nav-item ">
+                  <a class="nav-link active" data-toggle="tab" aria-current="page" href="#gambar">Gambar</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" data-toggle="tab" href="#video">Video</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" data-toggle="tab" href="#modul">Modul</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#audio">Audio</a>
+                </li>
+                
             </ul>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-          </li>
-        </ul>
 
-        <div class="col-lg-12 col-md-12">
-            <div>
-                <h3 class="text-primary">Post Image</h3>
-            </div>
-            <div class="row g-2">
-            {% for postImage in post %}
-                    {% comment %} //card start {% endcomment %}
-                    <div class="col-4">
-                      {% include "card_post/card_image.html" %}
-                      {% comment %} //modal end {% endcomment %}
+            <div class="tab-content">
+                <div id="gambar" class="tab-pane in active row">
+                    {% for postImage in post %}
+                        <div class="col-6 mt-4">
+                            {% include "card_post/card_image.html" %}
                     {% endfor %}
+                </div>
 
-                  <div>
-                      <h3 class="text-primary">Post Video</h3>
-                  </div>
-                  <div class="row g-2">
+                <div id="video" class="tab-pane">
                     {% for video in video %}
-                    {% comment %} //card start {% endcomment %}
-                    <div class="col-4">
-                      {% include "card_post/card_video.html" %}
+                        <div class="col-6">
+                            {% include "card_post/card_video.html" %}
                     {% endfor %}
-                    
-                    <div>
-                      <h3 class="text-primary">Post Modul</h3>
-                  </div>
-                  <div class="row g-2">
+                </div>
+
+                <div id="modul" class="tab-pane">
                     {% for modul in modul %}
-                    {% comment %} //card start {% endcomment %}
-                    <div class="col-4">
-                      {% include "card_post/card_modul.html" %}
+                        <div class="col-6">
+                            {% include "card_post/card_modul.html" %}
                     {% endfor %}
-                    </div>
-                    {% comment %} end card {% endcomment %}
-                </div>  
-              </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-        <script>
-            Swal.fire({
-                title: '{{ message|safe }}',
-                icon: 'success',
-                showConfirmButton: false,
-                timer: 1500
-            })
-        </script>
     
 
 {% include 'layouts/footer.html' %} 
