@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_list_or_404
+from django.shortcuts import render, redirect, get_list_or_404, get_object_or_404
 from django.contrib.auth.models import User, auth
 from .models import Profile, Post, LikePost, Kategori, Lisensi, PostImage, PostVideo, PostModul
 from urllib.parse import urlparse, parse_qs
@@ -13,6 +13,9 @@ import zipfile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
+from django.core.files.storage import FileSystemStorage
+from django.http import FileResponse
+import mimetypes
 
 def landing(request):
     if request.user.is_authenticated:
@@ -54,7 +57,7 @@ def register(request):
                 user_model = User.objects.get(username=username)
                 new_profile = Profile.objects.create(user=user_model, id_user=user_model.id)
                 new_profile.save()
-                return redirect('profile')
+                return redirect('settings')
         else:
             messages.info(request, 'Password not matching')
             return redirect('register')
@@ -536,8 +539,6 @@ def update_video(request, video_id):
     else:
         return render(request, 'update/update_video.html', {'video': video, 'kategori': kategori, 'lisensi': lisensi, 'profile': profile})
 
-from django.core.files.storage import FileSystemStorage
-
 def delete_video(request, video_id):
     video = PostVideo.objects.get(id=video_id)
 
@@ -594,6 +595,15 @@ def view_video(request):
 
         video = PostVideo.objects.all().order_by('-no_of_like')
     return render(request, 'konten/video.html', {'video': video, 'profile': profile})
+
+def download_video(request, video_id):
+    video = get_object_or_404(PostVideo, id=video_id)
+    file_path = video.file_video.path
+
+    with open(file_path, 'rb') as file:
+        response = HttpResponse(file.read(), content_type=mimetypes.guess_type(file_path)[0])
+        response['Content-Disposition'] = f'attachment; filename="{video.file_video.name}"'
+        return response
     
 #END CRUD VIDEO
 

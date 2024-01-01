@@ -14,6 +14,7 @@ urlpatterns = [
    path('delete_image/<uuid:post_id>/', views.delete_image, name='delete_image'),
    path('like_post', views.like_post, name='like_post'),
    path('download_images/<uuid:post_id>/', views.download_images, name='download_images'),
+   path('download_video/<uuid:video_id>/', views.download_video, name='download_video'),
    path('', views.landing, name="landing"),
    path('upload_video', views.upload_video, name='upload_video'),
    path('update_video/<uuid:video_id>/edit/', views.update_video, name='update_video'),

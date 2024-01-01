@@ -35,12 +35,35 @@
           
           <p class="text-body-light"><i class="fa-solid fa-heart"></i>  {{post.no_of_like}} </p>
           <a class="btn btn-primary" href="/like_post?post_id={{ post.id_post }}" role="button"><i class="fa-solid fa-heart"></i></a>
-          <button type="submit" class="btn btn-primary"><i class="fa-solid fa-share"></i></button>
+          <button type="button" class="btn  btn-primary" data-bs-toggle="modal" data-bs-target="#modal-share{{ postImage.id_post }}"><i class="fa-solid fa-share"></i></button>
           <a class="btn btn-primary" href="/like_post?post_id={{ post.id_post }}" role="button"><i class="fa-solid fa-download"></i></i></a>
         </div>
       </div>
-    
+
+      <div class="modal fade" id="modal-share{{ postImage.id_post }}"  data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel{{ postImage.id_post }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalLabel{{ postImage.id_post }}">Bagikan Konten</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body row">   
+                    <p>Bagikan konten ini melalui:</p>
+                    <div class="input-group mb-3 col-12">
+                        <input type="text" class="form-control" value="{{ request.build_absolute_uri }}" readonly>
+                        <button class="btn btn-outline-secondary" onclick="copyToClipboard()"><i class="fa-solid fa-copy"></i></button>
+                    </div>
       
+                    <a type="button" class="btn btn-success col-2 mx-3" href="whatsapp://send?text={{ request.build_absolute_uri }}" data-action="share/whatsapp/share"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a type="button" class="btn btn-primary col-2 mx-3" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+                    <a type="button" class="btn btn-info col-2 mx-3" href="https://t.me/share/url?url={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-telegram" ></i></a>
+                    <a type="button" class="btn btn-danger col-2 mx-3" href="https://www.instagram.com/?url={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
+        </div>
+      </div>
+
+
 </div>
 
 
