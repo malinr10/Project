@@ -6,13 +6,14 @@
           <h5 class="card-title">{{ video.judul }} </h5>
         </div>
         <div>
+          {% if user == video.user %}
           <div class="dropdown">
             <a class="btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fa-solid fa-ellipsis"></i>
             </a>
           
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="update_video/{{video.id}}"><i class="fa-regular fa-pen-to-square"></i> Update Konten</a></li>
+              <li><a class="dropdown-item" href="{% url 'update_video' video_id=video.id %}"><i class="fa-regular fa-pen-to-square"></i> Update Konten</a></li>
               <li>
                 <form action="{% url 'delete_video' video_id=video.id %}" method="post">
                   {% csrf_token %} 
@@ -21,6 +22,7 @@
               </li>
             </ul>
           </div>
+          {% endif %}
         </div>
       </div
       <p class="card-text">{{ video.deskripsi|slice:":50" }}{% if video.deskripsi|length > 50 %}...{% endif %}</p>

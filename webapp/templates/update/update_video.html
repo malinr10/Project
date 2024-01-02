@@ -6,7 +6,16 @@
         <div class="row">
             <div class="col-lg-8 col-md-12">
                 <div class="card">
-                    <h5 class="card-header">Update Konten Image</h5>
+                  {% if messages %}
+                      {% for message in messages %}
+                          {% if 'form_update_video' in message.tags %}
+                              <div class="alert alert-secondary" role="alert">
+                                  {{ message }}
+                              </div>
+                          {% endif %}
+                      {% endfor %}
+                  {% endif %}
+                    <h5 class="card-header">Update Konten Video</h5>
                     <div class="card-body">
                         <form action="" method="POST" enctype="multipart/form-data" class="row g-3">
                             {% csrf_token %}
@@ -22,10 +31,17 @@
                               <label for="deskripsi" class="form-label">Deskripsi</label>
                               <textarea class="form-control" value="" name="deskripsi" rows="1">{{video.deskripsi}}</textarea>
                             </div>
-                            <div class="col-6">
-                              <label for="images">Gambar</label>
-                              <input type="file" class="form-control" value="{{images.image}}" name="images" id="images" multiple>
-                            </div>
+                            {% if video.file_video.url is not None %}
+                              <div class="col-6">
+                                <label for="images">File Video</label>
+                                <input class="form-control" type="file" id="video_file" name="file_video">
+                              </div>
+                            {% else %}      
+                              <div class="col-6">
+                                <label for="images">Link Video</label>
+                                <input type="file" class="form-control" value="{{video.link_video}}" name="link_video" >
+                              </div>
+                            {% endif %}
                             <div class="col-6">
                                 <label for="kategori" class="form-label">Kategori Terdaftar</label>
                                 <input disabled type="text" value="{{video.kategori_id}}" name="kategori" class="form-control" id="kategori">

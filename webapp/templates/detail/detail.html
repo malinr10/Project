@@ -36,7 +36,7 @@
           <p class="text-body-light"><i class="fa-solid fa-heart"></i>  {{post.no_of_like}} </p>
           <a class="btn btn-primary" href="/like_post?post_id={{ post.id_post }}" role="button"><i class="fa-solid fa-heart"></i></a>
           <button type="button" class="btn  btn-primary" data-bs-toggle="modal" data-bs-target="#modal-share{{ postImage.id_post }}"><i class="fa-solid fa-share"></i></button>
-          <a class="btn btn-primary" href="/like_post?post_id={{ post.id_post }}" role="button"><i class="fa-solid fa-download"></i></i></a>
+          <a class="btn btn-primary" href="{% url 'download_images' post_id=post.id_post %}" role="button"><i class="fa-solid fa-download"></i></i></a>
         </div>
       </div>
 

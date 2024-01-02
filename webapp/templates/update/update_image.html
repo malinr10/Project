@@ -6,6 +6,15 @@
         <div class="row">
             <div class="col-lg-8 col-md-12">
                 <div class="card">
+                  {% if messages %}
+                      {% for message in messages %}
+                          {% if 'form_update_image' in message.tags %}
+                              <div class="alert alert-secondary" role="alert">
+                                  {{ message }}
+                              </div>
+                          {% endif %}
+                      {% endfor %}
+                  {% endif %}
                     <h5 class="card-header">Update Konten Image</h5>
                     <div class="card-body">
                         <form action="" method="POST" enctype="multipart/form-data" class="row g-3">

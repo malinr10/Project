@@ -6,13 +6,14 @@
           <h5 class="card-title">{{ modul.judul }} </h5>
         </div>
         <div>
+          {% if user == modul.user %}
           <div class="dropdown">
             <a class="btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fa-solid fa-ellipsis"></i>
             </a>
           
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="update_modul/{{modul.id}}"><i class="fa-regular fa-pen-to-square"></i> Update Konten</a></li>
+              <li><a class="dropdown-item" href="{% url 'update_modul' modul_id=modul.id %}"><i class="fa-regular fa-pen-to-square"></i> Update Konten</a></li>
               <li>
                 <form action="{% url 'delete_modul' modul_id=modul.id %}" method="post">
                   {% csrf_token %} 
@@ -21,6 +22,7 @@
               </li>
             </ul>
           </div>
+          {% endif %}
         </div>
       </div
       <p class="card-text">{{ modul.deskripsi|slice:":50" }}{% if modul.deskripsi|length > 50 %}...{% endif %}</p>

@@ -17,12 +17,13 @@ from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse
 import mimetypes
 
+# Landing Page
 def landing(request):
     if request.user.is_authenticated:
         return redirect('home')
     else:
         return render(request, 'index.html')
-
+# End of Landing Page
 
 # Create your views here.
 
@@ -40,10 +41,10 @@ def register(request):
         
         if password == confirm_password:
             if User.objects.filter(username=username).exists():
-                messages.info(request, 'Username already taken')
+                messages.info(request, 'Username already taken', extra_tags='form_register')
                 return redirect('register')
             elif User.objects.filter(email=email).exists():
-                messages.info(request, 'Email already taken')
+                messages.info(request, 'Email already taken', extra_tags='form_register')
                 return redirect('register')
             else:
                 user = User.objects.create_user(username=username, email=email, password=password)
@@ -59,7 +60,7 @@ def register(request):
                 new_profile.save()
                 return redirect('settings')
         else:
-            messages.info(request, 'Password not matching')
+            messages.info(request, 'Password tidak sama', extra_tags='form_register')
             return redirect('register')
     else:
         return render(request, 'register.html')
@@ -79,7 +80,7 @@ def login(request):
             auth.login(request, user)
             return redirect('home')
         else:
-            messages.info(request, 'Invalid Credentials')
+            messages.info(request, 'Invalid Credentials', extra_tags='form_login')
             return redirect('login')
     else:
         return render(request, 'login.html')
@@ -91,6 +92,7 @@ def logout(request):
 #End of User Authentication
 
 #Start of User Interface
+
 #Start of Home Page
 @login_required(login_url='login')
 def homePage(request):
@@ -123,13 +125,18 @@ def homePage(request):
     return render(request, 'homepage.html', {'post': post, 'profile': profile, 'images': images, 'lisensi': lisensi, 'video': video, 'modul': modul, 'latest_posts': latest_posts})
 #End of Home Page
 
+#Start of CRUD 
+
+#Detail Image
 def detail(request, id):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
     post = Post.objects.get(id_post=id)
     photos = PostImage.objects.filter(post=post)
     return render(request, 'detail/detail.html', {'post': post, 'photos': photos, 'profile': profile})
+#End of Detail Image
 
+#Start of Download Image
 def download_images(request, post_id):
     post = Post.objects.get(id_post=post_id)
     photos = PostImage.objects.filter(post=post)
@@ -148,8 +155,8 @@ def download_images(request, post_id):
     response['Content-Disposition'] = f'attachment; filename={zip_filename}'
 
     return response
+#End of Download Image
 
-#Start of CRUD Image
 #Start of Upload Image
 @login_required(login_url='login')
 def upload_image(request):
@@ -173,17 +180,17 @@ def upload_image(request):
         allowed_formats = ['image/jpeg', 'image/png', 'image/jpg']
 
         if thumbnail.content_type not in allowed_formats:
-            messages.error(request, f'Format File Tidak Sesuai!!!, Gunakan Format .jpg, .jpeg, dan .png: {thumbnail.name}')
+            messages.error(request, f'Format File Tidak Sesuai!!!, Gunakan Format .jpg, .jpeg, dan .png: {thumbnail.name}', extra_tags='form_upload_image')
 
         new_post = Post.objects.create(user=user, judul=judul, deskripsi=deskripsi, kategori_id=kategori_instance, lisensi_id=lisensi_instance, thumbnail=thumbnail) 
 
         for image in images:
             if image.content_type not in allowed_formats:
-                messages.error(request, f'Format File Tidak Sesuai!!!, Gunakan Format .jpg, .jpeg, dan .png: {image.name}')
+                messages.error(request, f'Format File Tidak Sesuai!!!, Gunakan Format .jpg, .jpeg, dan .png: {image.name}', extra_tags='form_upload_image')
             else:
                 PostImage.objects.create(post=new_post, image=image)
 
-        messages.success(request, 'Konten Berhasil Diupload')
+        messages.success(request, 'Konten Berhasil Diupload', extra_tags='form_upload_image')
 
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
@@ -229,7 +236,8 @@ def update_image(request, post_id):
                 if image == images[0]:
                     PostImage.objects.filter(post=post).delete()
                 PostImage.objects.create(post=post, image=image)
-
+        
+        messages.success(request, 'Konten Berhasil Diupdate', extra_tags='form_update_image')
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
         return render(request, 'update/update_image.html', {'post': post, 'images': images, 'kategori': kategori, 'lisensi': lisensi, 'postImage': postImage, 'profile': profile})
@@ -258,7 +266,8 @@ def delete_image(request, post_id):
         # Handle GET request, render confirmation page
         return render(request, 'profile', {'post': post})
 #END of Delete 
-    
+
+#start of view image
 def view_image(request):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
@@ -270,6 +279,30 @@ def view_image(request):
     elif sort_option == 'most_liked':
         post = Post.objects.all().order_by('-no_of_like')
     return render(request, 'konten/gambar.html', {'post': post, 'profile': profile})
+#end of view image
+
+#start of like image post
+def like_post(request):
+    referring_url = request.META.get('HTTP_REFERER')
+    username = request.user.username
+    post_id = request.GET.get('post_id')
+
+    post = Post.objects.get(id_post=post_id)
+
+    like_filter = LikePost.objects.filter(post_id=post_id, username=username).first()
+
+    if like_filter == None:
+        new_like = LikePost.objects.create(post_id=post_id, username=username)
+        new_like.save()
+        post.no_of_like += 1
+        post.save()
+        return redirect(referring_url)
+    else:
+        like_filter.delete()
+        post.no_of_like -= 1
+        post.save()
+        return redirect(referring_url)
+#end of like image post
 
 #End of CRUD Image
 
@@ -293,6 +326,8 @@ def settings(request):
         profile.no_hp = request.POST['no_hp']
         profile.jenis_kelamin = request.POST['jenis_kelamin']
         profile.save()
+
+        messages.success(request, 'Profile Berhasil Diupdate!', extra_tags='form_profile')
         
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
@@ -355,6 +390,7 @@ def update_akun(request):
         user_model.email = request.POST['email']
         user_model.save()
         
+        messages.success(request, 'Akun Berhasil Diupdate!', extra_tags='form_akun')
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
         return redirect('settings')
@@ -371,46 +407,26 @@ def update_password(request):
         confirm_new_password = request.POST['confirm_new_password']
          # Verifikasi password lama
         if not request.user.check_password(old_password):
-            messages.error(request, 'Password lama tidak benar.')
+            messages.error(request, 'Password lama tidak benar.', extra_tags="form_password")
             return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
         # Verifikasi konfirmasi password baru
         if new_password != confirm_new_password:
-            messages.error(request, 'Konfirmasi password baru tidak cocok.')
+            messages.error(request, 'Konfirmasi password baru tidak cocok.', extra_tags="form_password")
             return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
         # Set password baru dan perbarui session auth hash
         request.user.set_password(new_password)
         request.user.save()
         update_session_auth_hash(request, request.user)
+        messages.success(request, 'Password Berhasil Diupdate!', extra_tags="form_password")
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
         return redirect('settings')
 
-def like_post(request):
-    referring_url = request.META.get('HTTP_REFERER')
-    username = request.user.username
-    post_id = request.GET.get('post_id')
-
-    post = Post.objects.get(id_post=post_id)
-
-    like_filter = LikePost.objects.filter(post_id=post_id, username=username).first()
-
-    if like_filter == None:
-        new_like = LikePost.objects.create(post_id=post_id, username=username)
-        new_like.save()
-        post.no_of_like += 1
-        post.save()
-        return redirect(referring_url)
-    else:
-        like_filter.delete()
-        post.no_of_like -= 1
-        post.save()
-        return redirect(referring_url)
-    
-
 #CRUD VIDEO
 
+# Fungsi ini digunakan untuk mendapatkan ID video YouTube dari URL tautan YouTube.
 def get_youtube_video_id(url):
     """
     Fungsi ini digunakan untuk mendapatkan ID video YouTube dari URL tautan YouTube.
@@ -427,6 +443,7 @@ def get_youtube_video_id(url):
         return query.path[1:]
     return None
 
+#start of upload_video
 def upload_video(request):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
@@ -449,9 +466,9 @@ def upload_video(request):
         allowed_formats = ['video/mp4', 'video/avi', 'video/mkv']
 
         if file_video and file_video.content_type not in allowed_formats:
-            messages.error(request, f'Format File Tidak Sesuai!!! Gunakan Format .mp4, .avi, dan .mkv: {file_video.name}')
+            messages.error(request, f'Format File Tidak Sesuai!!! Gunakan Format .mp4, .avi, dan .mkv: {file_video.name}', extra_tags='form_upload_video')
         elif not file_video and not link_video:
-            messages.error(request, 'Harap unggah file video atau masukkan tautan YouTube.')
+            messages.error(request, 'Harap unggah file video atau masukkan tautan YouTube.', extra_tags='form_upload_video')
         else:
             # Jika pengguna mengunggah melalui tautan YouTube
             if link_video:
@@ -469,10 +486,10 @@ def upload_video(request):
                         link_video=youtube_video_id,
                         # file_video tidak diisi karena ini dari tautan YouTube
                     )
-                    messages.success(request, 'Konten Berhasil Diupload')
+                    messages.success(request, 'Konten Berhasil Diupload', extra_tags='form_upload_video')
                     return HttpResponseRedirect(request.META['HTTP_REFERER'])
                 else:
-                    messages.error(request, 'Tautan YouTube tidak valid.')
+                    messages.error(request, 'Tautan YouTube tidak valid.', extra_tags='form_upload_video')
             else:
                 # Jika pengguna mengunggah file video
                 new_post = PostVideo.objects.create(
@@ -485,11 +502,13 @@ def upload_video(request):
                     link_video=link_video,
                     file_video=file_video,
                 )
-                messages.success(request, 'Konten Berhasil Diupload')
+                messages.success(request, 'Konten Berhasil Diupload', extra_tags='form_upload_video')
                 return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
     return render(request, 'upload/upload_video.html', {'kategori': kategori, 'lisensi': lisensi, 'profile': profile})
+#end of upload_video
 
+#start of update_video
 def update_video(request, video_id):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
@@ -523,7 +542,7 @@ def update_video(request, video_id):
         if file_video:
             allowed_formats = ['video/mp4', 'video/avi', 'video/mkv']
             if file_video.content_type not in allowed_formats:
-                messages.error(request, f'Format File Tidak Sesuai!!! Gunakan Format .mp4, .avi, dan .mkv: {file_video.name}')
+                messages.error(request, f'Format File Tidak Sesuai!!! Gunakan Format .mp4, .avi, dan .mkv: {file_video.name}', extra_tags='form_update_video')
             else:
                 video.file_video = file_video
                 video.link_video = None
@@ -535,12 +554,15 @@ def update_video(request, video_id):
                 video.link_video = youtube_video_id
                 video.save()
             else:
-                messages.error(request, 'Tautan YouTube tidak valid.')
+                messages.error(request, 'Tautan YouTube tidak valid.', extra_tags='form_update_video')
 
+        messages.success(request, 'Konten Berhasil Diupdate', extra_tags='form_update_video')    
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
         return render(request, 'update/update_video.html', {'video': video, 'kategori': kategori, 'lisensi': lisensi, 'profile': profile})
+#end of update_video
 
+#start of delete_video
 def delete_video(request, video_id):
     video = PostVideo.objects.get(id=video_id)
 
@@ -561,8 +583,9 @@ def delete_video(request, video_id):
             messages.error(request, f'Error deleting content: {str(e)}')
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
+#end of delete_video
 
-
+#start of like_video
 def like_video(request):
     referring_url = request.META.get('HTTP_REFERER')
     username = request.user.username
@@ -583,7 +606,9 @@ def like_video(request):
         post.no_of_like -= 1
         post.save()
         return redirect(referring_url)
-    
+#end of like_video
+
+#start of view_video
 def view_video(request):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
@@ -597,7 +622,9 @@ def view_video(request):
 
         video = PostVideo.objects.all().order_by('-no_of_like')
     return render(request, 'konten/video.html', {'video': video, 'profile': profile})
+#end of view_video
 
+#start of download_video
 def download_video(request, video_id):
     video = get_object_or_404(PostVideo, id=video_id)
     file_path = video.file_video.path
@@ -606,10 +633,12 @@ def download_video(request, video_id):
         response = HttpResponse(file.read(), content_type=mimetypes.guess_type(file_path)[0])
         response['Content-Disposition'] = f'attachment; filename="{video.file_video.name}"'
         return response
-    
+#end of download_video
+
 #END CRUD VIDEO
 
 #CRUD Modul Dokumen
+#start of upload_modul
 def upload_modul(request):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
@@ -631,7 +660,7 @@ def upload_modul(request):
         allowed_formats = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 
         if file_modul and file_modul.content_type not in allowed_formats:
-            messages.error(request, f'Format File Tidak Sesuai!!! Gunakan Format .pdf: {file_modul.name}')
+            messages.error(request, f'Format File Tidak Sesuai!!! Gunakan Format .pdf: {file_modul.name}', extra_tags='form_upload_modul')
         else:
             new_post = PostModul.objects.create(
                 user=user,
@@ -642,11 +671,13 @@ def upload_modul(request):
                 thumbnail=thumbnail,
                 file_modul=file_modul,
             )
-            messages.success(request, 'Konten Berhasil Diupload')
+            messages.success(request, 'Konten Berhasil Diupload', extra_tags='form_upload_modul')
             return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
     return render(request, 'upload/upload_modul.html', {'kategori': kategori, 'lisensi': lisensi, 'profile': profile})
+#end of upload_modul
 
+#start of update_modul
 def update_modul(request, modul_id):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
@@ -679,21 +710,23 @@ def update_modul(request, modul_id):
         if file_modul:
             allowed_formats = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
             if file_modul.content_type not in allowed_formats:
-                messages.error(request, f'Format File Tidak Sesuai!!! Gunakan Format .pdf: {file_modul.name}')
+                messages.error(request, f'Format File Tidak Sesuai!!! Gunakan Format .pdf: {file_modul.name}', extra_tags='form_update_modul')
             else:
                 modul.file_modul = file_modul
                 modul.save()
-
+        messages.success(request, 'Konten Berhasil Diupdate', extra_tags='form_update_modul')
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
         return render(request, 'update/update_modul.html', {'modul': modul, 'kategori': kategori, 'lisensi': lisensi, 'profile': profile})
+#end of update_modul
 
+#start of like_modul
 def like_modul(request):
     referring_url = request.META.get('HTTP_REFERER')
     username = request.user.username
     modul_id = request.GET.get('modul_id')
 
-    post = PostVideo.objects.get(id=modul_id)
+    post = PostModul.objects.get(id=modul_id)
 
     like_filter = LikePost.objects.filter(modul_id=modul_id, username=username).first()
 
@@ -725,7 +758,9 @@ def delete_modul(request, modul_id):
     else:
         # Handle GET request, render confirmation page
         return render(request, 'profile', {'modul': modul})
+#end of like_modul
 
+#start of view_modul
 def view_modul(request):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)

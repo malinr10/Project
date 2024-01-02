@@ -8,10 +8,11 @@
                 <div class="card">
                     {% if messages %}
                         {% for message in messages %}
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
+                            {% if 'form_upload_modul' in message.tags %}
+                                <div class="alert alert-secondary" role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endif %}
                         {% endfor %}
                     {% endif %}
                     <h5 class="card-header">Upload Konten Modul</h5>

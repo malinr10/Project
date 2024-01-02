@@ -7,13 +7,14 @@
             <div class="col-lg-12 col-md-12">
                 <div class="card">
                     {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+                      {% for message in messages %}
+                          {% if 'form_upload_image' in message.tags %}
+                              <div class="alert alert-secondary" role="alert">
+                                  {{ message }}
+                              </div>
+                          {% endif %}
+                      {% endfor %}
+                  {% endif %}
                     <h5 class="card-header">Upload Konten Image</h5>
                     <div class="card-body">
                         <form action="" method="POST" enctype="multipart/form-data" class="row g-3">

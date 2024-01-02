@@ -16,6 +16,15 @@
                 class="img-fluid" alt="Phone image">
             </div>
             <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
+                {% if messages %}
+                {% for message in messages %}
+                    {% if 'form_register' in message.tags %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
             <form action="" method="POST">
                 {% csrf_token %}
                 <div class="mb-4">
