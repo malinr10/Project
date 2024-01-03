@@ -9,7 +9,7 @@ urlpatterns = [
    path('logout', views.logout, name='logout'),
    path('update_akun', views.update_akun, name='update_akun'),
    path('update_password', views.update_password, name='update_password'),
-   
+
    #Menu
    path('settings', views.settings, name='settings'),
    path('profile', views.profile, name='profile'),
@@ -43,6 +43,5 @@ urlpatterns = [
    #Search
    path('search_konten', views.search_konten, name='search_konten'),
    
-
    
 ]

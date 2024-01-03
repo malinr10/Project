@@ -28,9 +28,17 @@
     </div>
 
     <div class="p-md-5 mb-4 text-body-emphasis ">
-        <div class="col-lg-7 px-0">
+        <div class="col-lg-12 px-0">
           <h5 class=" font-primary" style="font-size:50px; font-weight: 700; line-height: 50px;">{{post.judul}}</h5>
           <strong style="font-size:25px; font-weight: 400; line-height: 50px;">Deskripsi</strong>
+          <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;">{{post.kategori_id}}</p>
+          {%if post.lisensi_id.nama_lisensi == "CC BY"%}
+            <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" > <a href="http://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"></a></p></p>
+          {%elif post.lisensi_id.nama_lisensi == "CC BY ND"%}
+            <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" ><a href="http://creativecommons.org/licenses/by-nd/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1"></a></p></p>
+            {%elif post.lisensi_id.nama_lisensi == "CC BY SA"%}
+            <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" > <a href="http://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1"></a></p></p>
+          {%endif%}
           <p class="lead my-3" style="font-size:25px; font-weight: 400; line-height: 50px;">{{post.deskripsi}}</p>
           
           <p class="text-body-light"><i class="fa-solid fa-heart"></i>  {{post.no_of_like}} </p>

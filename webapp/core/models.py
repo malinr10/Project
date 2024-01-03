@@ -72,16 +72,20 @@ class PostModul(models.Model):
     def __str__(self):
         return self.judul
 
-
-# class Comment(models.Model):
-#     id_comment = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+# class PostAudio(models.Model):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 #     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-#     isi_comment = models.TextField()
+#     kategori_id = models.ForeignKey('Kategori', on_delete=models.CASCADE)
+#     lisensi_id = models.ForeignKey('Lisensi', on_delete=models.CASCADE)
+#     thumbnail = models.ImageField(upload_to='post_thumbnail', null=True)
+#     file_audio = models.FileField(upload_to='post_audios', null=True)
+#     judul = models.CharField(max_length=100)
+#     deskripsi = models.TextField()
 #     created_at = models.DateTimeField(default=datetime.now)
+#     no_of_like = models.IntegerField(default=0)
     
 #     def __str__(self):
-#         return self.isi_comment
+#         return self.judul
 
 class Kategori(models.Model):
     nama_kategori = models.CharField(max_length=100)

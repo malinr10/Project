@@ -39,7 +39,7 @@
         <div class="btn-group">
           <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal{{ video.id }}">View</button>
           <a class="btn btn-outline-secondary" href="/like_video?video_id={{ video.id }}" role="button"><i class="fa-solid fa-heart"></i></a>
-          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-share{{ postImage.id_post }}"><i class="fa-solid fa-share"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-share{{ videpo }}"><i class="fa-solid fa-share"></i></button>
           
           {% if video.file_video.url is not None %}
               <a class="btn btn-outline-secondary" href="{% url 'download_video' video_id=video.id %}" role="button"><i class="fa-solid fa-download"></i></i></a>
@@ -80,6 +80,13 @@
       </div>
       <div>
         <h6>Deskripsi</h6>
+        {%if video.lisensi_id.nama_lisensi == "CC BY"%}
+            <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" > <a href="http://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"></a></p></p>
+          {%elif video.lisensi_id.nama_lisensi == "CC BY ND"%}
+            <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" ><a href="http://creativecommons.org/licenses/by-nd/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1"></a></p></p>
+            {%elif video.lisensi_id.nama_lisensi == "CC BY SA"%}
+            <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" > <a href="http://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1"></a></p></p>
+          {%endif%}
         <p class="card-text">{{ video.deskripsi }}</p>
       </div>
     </div>
@@ -90,11 +97,11 @@
 </div>
 </div>
 
-<div class="modal fade" id="modal-share{{ postImage.id_post }}"  data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel{{ postImage.id_post }}" aria-hidden="true">
+<div class="modal fade" id="modal-share{{ videpo }}"  data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel{{ videpo }}" aria-hidden="true">
   <div class="modal-dialog">
       <div class="modal-content">
           <div class="modal-header">
-              <h1 class="modal-title fs-5" id="modalLabel{{ postImage.id_post }}">Bagikan Konten</h1>
+              <h1 class="modal-title fs-5" id="modalLabel{{ videpo }}">Bagikan Konten</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body row">   

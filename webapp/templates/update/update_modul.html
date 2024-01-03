@@ -43,7 +43,7 @@
                               <label for="kategori" class="form-label">Pilih Kategori</label>
                               <select class="form-select {% if kategori.errors %}is-invalid{% endif %}" name="kategori">
                                 {% for kategori in kategori %}
-                                <option value="{{ kategori.id }}" {% if modul.kategori_id == kategori.id %}selected{% endif %}>{{ kategori.nama_kategori }}</option>
+                                <option value="{{ kategori.id }}" {% if modul.kategori_id.nama_kategori == kategori.nama_kategori %}selected{% endif %}>{{ kategori.nama_kategori }}</option>
                                 {% endfor %}
                               </select>
                             </div>
@@ -55,7 +55,7 @@
                               <label for="lisensi" class="form-label">Pilih Lisensi</label>
                               <select class="form-select {% if lisensi.errors %}is-invalid{% endif %}" name="lisensi">
                                 {% for lisensi in lisensi %}
-                                    <option value="{{ lisensi.id }}" {% if lisensi.id  == modul.lisensi_id %}selected{% endif %}>
+                                    <option value="{{ lisensi.id }}" {% if lisensi.nama_lisensi  == modul.lisensi_id.nama_lisensi %}selected{% endif %}>
                                         {{ lisensi.nama_lisensi }}
                                     </option>
                                 {% endfor %}
@@ -66,12 +66,6 @@
                             <div class="col-3">
                                 <h6>Thumbnail</h6>
                                 <img src="{{modul.thumbnail.url}}" alt="" class="m-2" width="175px" height="auto">
-                            </div>
-                            <div class="col-9   ">
-                                <h6>Gambar Konten</h6>
-                                {% for images in images %}
-                                    <img src="{{images.image.url}}" alt="" class="m-2" width="175px" height="auto">
-                                {% endfor %}
                             </div>
                             <div align="center" class="col-12 mt-3">
 

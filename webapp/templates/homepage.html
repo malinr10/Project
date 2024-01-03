@@ -21,11 +21,11 @@
         </div>    
         <div class="row g-3">
             <div class="col-8">
-                <div class="row g-2 m-1">
+                <div class="row g-2 m-1" >
                   <h4>Post Gambar</h4>
                     {% for postImage in post %}
                     {% comment %} //card start {% endcomment %}
-                    <div class="col-6">
+                    <div class="col-lg-6 col-sm-12">
                       {% include "card_post/card_image.html" %}
                       {% comment %} //modal end {% endcomment %}
                     {% endfor %}
@@ -34,7 +34,7 @@
                     {% comment %} Video {% endcomment %}
                     {% for video in video %}
                     {% comment %} //card start {% endcomment %}
-                    <div class="col-6">
+                    <div class="col-lg-6 col-sm-12">
                         {% include "card_post/card_video.html" %}
                       {% comment %} //modal end {% endcomment %}
                     {% endfor %}
@@ -43,7 +43,7 @@
                     {% comment %} Modul {% endcomment %}
                     {% for modul in modul %}
                     {% comment %} //card start {% endcomment %}
-                    <div class="col-6">
+                    <div class="col-lg-6 col-sm-12">
                       {% include "card_post/card_modul.html" %}
                     {% endfor %}
                 </div>

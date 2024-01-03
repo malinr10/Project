@@ -39,7 +39,7 @@
                             {% else %}      
                               <div class="col-6">
                                 <label for="images">Link Video</label>
-                                <input type="file" class="form-control" value="{{video.link_video}}" name="link_video" >
+                                <input type="text" class="form-control" value="https://www.youtube.com/embed/{{video.link_video}}" name="link_video" >
                               </div>
                             {% endif %}
                             <div class="col-6">
@@ -50,7 +50,7 @@
                               <label for="kategori" class="form-label">Pilih Kategori</label>
                               <select class="form-select {% if kategori.errors %}is-invalid{% endif %}" name="kategori">
                                 {% for kategori in kategori %}
-                                <option value="{{ kategori.id }}" {% if video.kategori_id == kategori.id %}selected{% endif %}>{{ kategori.nama_kategori }}</option>
+                                <option value="{{ kategori.id }}" {% if video.kategori_id.nama_kategori == kategori.nama_kategori %}selected{% endif %}>{{ kategori.nama_kategori }}</option>
                                 {% endfor %}
                               </select>
                             </div>
@@ -62,7 +62,7 @@
                               <label for="lisensi" class="form-label">Pilih Lisensi</label>
                               <select class="form-select {% if lisensi.errors %}is-invalid{% endif %}" name="lisensi">
                                 {% for lisensi in lisensi %}
-                                    <option value="{{ lisensi.id }}" {% if lisensi.id  == video.lisensi_id %}selected{% endif %}>
+                                    <option value="{{ lisensi.id }}" {% if lisensi.nama_lisensi  == video.lisensi_id.nama_lisensi %}selected{% endif %}>
                                         {{ lisensi.nama_lisensi }}
                                     </option>
                                 {% endfor %}
@@ -74,12 +74,7 @@
                                 <h6>Thumbnail</h6>
                                 <img src="{{video.thumbnail.url}}" alt="" class="m-2" width="175px" height="auto">
                             </div>
-                            <div class="col-9   ">
-                                <h6>Gambar Konten</h6>
-                                {% for images in images %}
-                                    <img src="{{images.image.url}}" alt="" class="m-2" width="175px" height="auto">
-                                {% endfor %}
-                            </div>
+                            
                             <div align="center" class="col-12 mt-3">
 
                               <button  type="submit" class="btn btn-primary w-100">Submit</button>

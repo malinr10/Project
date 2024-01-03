@@ -5,9 +5,11 @@
 <div class="container">
     <div class="row">
         <div class="col-4">
+            
             <div class="card">
                 <img src="{{ profile.profile_image.url }}" class="card-img-top" alt="...">
                 <ul class="list-group list-group-flush">
+                  <li class="list-group-item">Jumlah Postingan Disukai : {{jumlah_likes}}</li>
                   <li class="list-group-item">Nama : {{profile.nama_lengkap}}</li>
                   <li class="list-group-item">Tanggal Lahir : {{profile.tanggal_lahir}}</li>
                   <li class="list-group-item">Alamat : {{profile.alamat}}</li>
@@ -33,30 +35,29 @@
                 <li class="nav-item">
                   <a class="nav-link" data-toggle="tab" href="#modul">Modul</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#audio">Audio</a>
-                </li>
                 
             </ul>
 
-            <div class="tab-content">
-                <div id="gambar" class="tab-pane in active row">
+            <div class="tab-content row">
+                <div id="gambar" class="tab-pane in active">
                     {% for postImage in post %}
-                        <div class="col-6 mt-4">
+                    
+                        <div class="col mt-4">
                             {% include "card_post/card_image.html" %}
+                        
                     {% endfor %}
                 </div>
 
                 <div id="video" class="tab-pane">
                     {% for video in video %}
-                        <div class="col-6">
+                        <div class="col mt-4">
                             {% include "card_post/card_video.html" %}
                     {% endfor %}
                 </div>
 
                 <div id="modul" class="tab-pane">
                     {% for modul in modul %}
-                        <div class="col-6">
+                        <div class="col mt-4">
                             {% include "card_post/card_modul.html" %}
                     {% endfor %}
                 </div>

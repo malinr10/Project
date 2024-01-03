@@ -43,7 +43,7 @@
                               <label for="kategori" class="form-label">Pilih Kategori</label>
                               <select class="form-select {% if kategori.errors %}is-invalid{% endif %}" name="kategori">
                                 {% for kategori in kategori %}
-                                <option value="{{ kategori.id }}" {% if post.kategori_id == kategori.id %}selected{% endif %}>{{ kategori.nama_kategori }}</option>
+                                <option value="{{ kategori.id }}" {% if post.kategori_id.nama_kategori == kategori.nama_kategori %}selected{% endif %}>{{ kategori.nama_kategori }}</option>
                                 {% endfor %}
                               </select>
                             </div>
@@ -55,7 +55,7 @@
                               <label for="lisensi" class="form-label">Pilih Lisensi</label>
                               <select class="form-select {% if lisensi.errors %}is-invalid{% endif %}" name="lisensi">
                                 {% for lisensi in lisensi %}
-                                    <option value="{{ lisensi.id }}" {% if lisensi.id  == post.lisensi_id %}selected{% endif %}>
+                                    <option value="{{ lisensi.id }}" {% if lisensi.nama_lisensi  == post.lisensi_id.nama_lisensi %}selected{% endif %}>
                                         {{ lisensi.nama_lisensi }}
                                     </option>
                                 {% endfor %}

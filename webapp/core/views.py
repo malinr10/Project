@@ -16,6 +16,8 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.core.files.storage import FileSystemStorage
 from django.http import FileResponse
 import mimetypes
+import pandas as pd
+import numpy as np
 
 # Landing Page
 def landing(request):
@@ -93,7 +95,22 @@ def logout(request):
 
 #Start of User Interface
 
-#Start of Home Page
+#Start of Home 
+def bubble_sort(posts):
+    post = Post.objects.all()
+    video = PostVideo.objects.all()
+    modul = PostModul.objects.all()
+    posts = list(post) + list(video) + list(modul)
+    n = len(posts)
+
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            # Ganti 'created_at' dengan atribut atau metode yang sesuai untuk objek Post, Video, atau Modul
+            if posts[j].created_at < posts[j + 1].created_at:
+                posts[j], posts[j + 1] = posts[j + 1], posts[j]
+
+    return posts
+
 @login_required(login_url='login')
 def homePage(request):
     user_object = User.objects.get(username=request.user.username)
@@ -104,13 +121,11 @@ def homePage(request):
     images = PostImage.objects.filter(post__in=post)
     lisensi = Lisensi.objects.all()
 
-    all_posts = sorted(
-        list(post) + list(video) + list(modul),
-        key=lambda post: post.created_at,
-        reverse=True
-    )
+    all_posts = list(post) + list(video) + list(modul)
 
-    latest_posts = all_posts[:5]
+    sorted_posts = bubble_sort(all_posts)
+
+    latest_posts = sorted_posts[:5]
 
     sort_option = request.GET.get('sort', 'latest') 
     if sort_option == 'latest':
@@ -121,6 +136,8 @@ def homePage(request):
         post = Post.objects.all().order_by('-no_of_like')
         video = PostVideo.objects.all().order_by('-no_of_like')
         modul = PostModul.objects.all().order_by('-no_of_like')
+    
+    
 
     return render(request, 'homepage.html', {'post': post, 'profile': profile, 'images': images, 'lisensi': lisensi, 'video': video, 'modul': modul, 'latest_posts': latest_posts})
 #End of Home Page
@@ -131,9 +148,10 @@ def homePage(request):
 def detail(request, id):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
+    lisensi = Lisensi.objects.all()
     post = Post.objects.get(id_post=id)
     photos = PostImage.objects.filter(post=post)
-    return render(request, 'detail/detail.html', {'post': post, 'photos': photos, 'profile': profile})
+    return render(request, 'detail/detail.html', {'post': post, 'photos': photos, 'profile': profile, 'lisensi': lisensi})
 #End of Detail Image
 
 #Start of Download Image
@@ -271,14 +289,23 @@ def delete_image(request, post_id):
 def view_image(request):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
-    post = Post.objects.all()
+    posts = Post.objects.all()
 
-    sort_option = request.GET.get('sort', 'latest')  # Default to sorting by latest
-    if sort_option == 'latest':
-        post = Post.objects.all().order_by('-created_at')  
-    elif sort_option == 'most_liked':
-        post = Post.objects.all().order_by('-no_of_like')
-    return render(request, 'konten/gambar.html', {'post': post, 'profile': profile})
+    post_df = pd.DataFrame.from_records(posts.values())
+
+    if Post.objects.all().exists():
+        sort_option = request.GET.get('sort', 'latest') 
+        if sort_option == 'latest':
+            post_df = post_df.sort_values(by='created_at', ascending=False)
+        elif sort_option == 'most_liked':
+            post_df = post_df.sort_values(by='no_of_like', ascending=False)
+        
+        sorted_post_ids = post_df['id_post'].tolist()
+        post = sorted(posts, key=lambda x: sorted_post_ids.index(x.id_post))
+
+        return render(request, 'konten/gambar.html', {'post': post, 'profile': profile})
+    else:
+        return render(request, 'konten/gambar.html', {'profile': profile})
 #end of view image
 
 #start of like image post
@@ -338,6 +365,18 @@ def settings(request):
             'profile': profile,
         }
         return render(request, 'setting.html', context)
+    
+def hitungJumlahLike():
+    post_likes = np.array(Post.objects.values_list('no_of_like', flat=True))
+    modul_likes = np.array(PostModul.objects.values_list('no_of_like', flat=True))
+    video_likes = np.array(PostVideo.objects.values_list('no_of_like', flat=True))
+
+    all_likes = np.concatenate([post_likes, modul_likes, video_likes])
+
+    sum_likes = np.sum(all_likes)
+
+    return sum_likes
+
 
 @login_required(login_url='login')
 def profile(request):
@@ -352,7 +391,6 @@ def profile(request):
         elif request.FILES.get('profile_image') != None:
             profile.profile_image = request.FILES['profile_image']
         
-
         profile.alamat = request.POST['alamat']
         profile.tanggal_lahir = request.POST['tanggal_lahir']
         profile.nama_lengkap = request.POST['nama_lengkap']
@@ -362,6 +400,7 @@ def profile(request):
         
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
     else:
+        jumlah_likes = hitungJumlahLike()
         user = request.user
         user_model = User.objects.get(username=user)
         profile = Profile.objects.get(user=user_model)
@@ -375,6 +414,7 @@ def profile(request):
             'images': images,
             'video': video,
             'modul': modul,
+            'jumlah_likes': jumlah_likes,
         }
         return render(request, 'profile.html', context)
 
@@ -540,7 +580,7 @@ def update_video(request, video_id):
         video.save()
 
         if file_video:
-            allowed_formats = ['video/mp4', 'video/avi', 'video/mkv']
+            allowed_formats = ['video/mp4', 'video/avi']
             if file_video.content_type not in allowed_formats:
                 messages.error(request, f'Format File Tidak Sesuai!!! Gunakan Format .mp4, .avi, dan .mkv: {file_video.name}', extra_tags='form_update_video')
             else:
@@ -570,15 +610,24 @@ def delete_video(request, video_id):
         try:
             fs = FileSystemStorage()
 
-            if video.file_video:
-                fs.delete(video.file_video.name)
+            # Getting the paths
+            file_video_path = os.path.join(fs.location, video.file_video.name)
+            thumbnail_path = os.path.join(fs.location, video.thumbnail.name)
 
-            if video.thumbnail:
-                fs.delete(video.thumbnail.name)
+            # Deleting the files using with open
+            with open(file_video_path, 'rb'):
+                pass  # Open the file to make sure it's closed
+            with open(thumbnail_path, 'rb'):
+                pass  # Open the file to make sure it's closed
 
+            # Deleting the database record
             video.delete()
+
+            # Optionally, you can delete the entire directory if needed
+            directory_path = os.path.join(fs.location, 'your_directory_name')
+            os.rmdir(directory_path)
+
             messages.success(request, 'Konten Berhasil Dihapus!')
-            return HttpResponseRedirect(request.META['HTTP_REFERER'])
         except Exception as e:
             messages.error(request, f'Error deleting content: {str(e)}')
 
@@ -612,16 +661,22 @@ def like_video(request):
 def view_video(request):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
-    video = PostVideo.objects.all()
+    videos = PostVideo.objects.all()
 
-    sort_option = request.GET.get('sort', 'latest')  # Default to sorting by latest
-    if sort_option == 'latest':
-       
-        video = PostVideo.objects.all().order_by('-created_at')
-    elif sort_option == 'most_liked':
+    video_df = pd.DataFrame.from_records(videos.values())
+    if PostVideo.objects.all().exists():
+        sort_option = request.GET.get('sort', 'latest')  # Default to sorting by latest
+        if sort_option == 'latest':
+            video_df = video_df.sort_values(by='created_at', ascending=False)
+        elif sort_option == 'most_liked':
+            video_df = video_df.sort_values(by='no_of_like', ascending=False)
+    
+        sorted_post_ids = video_df['id'].tolist()
+        video = sorted(videos, key=lambda x: sorted_post_ids.index(x.id))
 
-        video = PostVideo.objects.all().order_by('-no_of_like')
-    return render(request, 'konten/video.html', {'video': video, 'profile': profile})
+        return render(request, 'konten/video.html', {'video': video, 'profile': profile})
+    else:
+        return render(request, 'konten/video.html', {'profile': profile})
 #end of view_video
 
 #start of download_video
@@ -764,25 +819,53 @@ def delete_modul(request, modul_id):
 def view_modul(request):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
-    modul = PostModul.objects.all()
-    sort_option = request.GET.get('sort', 'latest')
-    if sort_option == 'latest':
-        modul = PostModul.objects.all().order_by('-created_at')
-    elif sort_option == 'most_liked':
-        modul = PostModul.objects.all().order_by('-no_of_like')
-    return render(request, 'konten/modul.html', {'modul': modul, 'profile': profile})
+    moduls = PostModul.objects.all()
+    modul_df = pd.DataFrame.from_records(moduls.values())
+
+    if PostModul.objects.all().exists():
+        sort_option = request.GET.get('sort', 'latest')  # Default to sorting by latest
+        if sort_option == 'latest':
+            modul_df = modul_df.sort_values(by='created_at', ascending=False)
+        elif sort_option == 'most_liked':
+            modul_df = modul_df.sort_values(by='no_of_like', ascending=False)
+        
+        sorted_post_ids = modul_df['id'].tolist()
+        modul = sorted(moduls, key=lambda x: sorted_post_ids.index(x.id))
+
+        return render(request, 'konten/modul.html', {'modul': modul, 'profile': profile})
+    else:
+        return render(request, 'konten/modul.html', {'profile': profile})
 #END CRUD Modul Dokeumen
 
 #searching konten
+def linear_search_konten(query, model):
+    results = []
+    for field in ['judul']:
+        results.extend(model.objects.filter(**{f'{field}__icontains': query}))
+    return results
+
 def search_konten(request):
     user_object = User.objects.get(username=request.user.username)
     profile = Profile.objects.get(user=user_object)
+    
     if request.method == 'POST':
-        search = request.POST['search']
-        post = Post.objects.filter(judul__icontains=search)
-        video = PostVideo.objects.filter(judul__icontains=search)
-        modul = PostModul.objects.filter(judul__icontains=search)
-        images = PostImage.objects.filter(post__in=post)
+        search_query = request.POST['search']
+        
+        post = linear_search_konten(search_query, Post)
+        video = linear_search_konten(search_query, PostVideo)
+        modul = linear_search_konten(search_query, PostModul)
+        
+        post_images = PostImage.objects.filter(post__in=post)
         lisensi = Lisensi.objects.all()
-        return render(request, 'search.html', {'post': post, 'images': images, 'lisensi': lisensi, 'video': video, 'modul': modul, 'profile': profile})
+        
+        return render(request, 'search.html', {
+            'post': post,
+            'images': post_images,
+            'lisensi': lisensi,
+            'video': video,
+            'modul': modul,
+            'profile': profile,
+        })
+    
 #end search
+    

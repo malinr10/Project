@@ -4,13 +4,85 @@
     <div class="container-fluid">
         <div class="row g-3">
             <div class="col-12">
-                <div class="row g-2 m-1" data-masonry='{"percentPosition": true }'>
+                <div class="row g-2 m-1">
                   <h3>Post Gambar</h3>
                     {% for postImage in post %}
                     {% comment %} //card start {% endcomment %}
                     <div class="col-4">
-                      {% include "card_post/card_image.html" %}
-                      {% comment %} //modal end {% endcomment %}
+                      <div class="card">
+                        <a href="{{postImage.thumbnail.url}}"><img src="{{postImage.thumbnail.url}}" class="card-img-top" style="height: 40rem;" alt="..."></a>
+                        <div class="card-body">
+                          <div class="d-flex justify-content-between">
+                            <div>
+                              <h5 class="card-title">{{ postImage.judul }} </h5>
+                            </div>
+                            <div>
+                              {% if user == postImage.user %}
+                              <div class="dropdown">
+                                <a class="btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                  <i class="fa-solid fa-ellipsis"></i>
+                                </a>
+                              
+                                <ul class="dropdown-menu">
+                                  <li><a class="dropdown-item" href="{% url 'update_image' post_id=postImage.id_post %}"><i class="fa-regular fa-pen-to-square"></i> Update Konten</a></li>
+                                  <li>
+                                      <form action="{% url 'delete_image' post_id=postImage.id_post %}" method="post">
+                                      {% csrf_token %} 
+                                        <button class="btn dropdown-item" onclick="return confirm('Apakah Anda yakin ingin menghapus konten?')" type="submit"><i class="fa-solid fa-trash"></i> Hapus Konten</button></li>
+                                      </form> 
+                                  </li>
+                                </ul>
+                              </div>
+                              {% endif %}
+                            </div>
+                          </div>
+                          <p class="card-text">{{ postImage.deskripsi|slice:":50" }}{% if postImage.deskripsi|length > 50 %}...{% endif %}</p>
+                          <hr>
+                          <div class="mb-2 d-flex justify-content-between">
+                            <div class="d-flex">
+                              <img src="{{profile.profile_image.url }}" alt="mdo" width="32" height="32" class="rounded-circle me-2">
+                              <p class="me-1">{{postImage.user}}</p>
+                            </div>
+                            <p class="text-body-light"><i class="fa-solid fa-heart"></i>  {{postImage.no_of_like}} </p>
+                          </div>
+                          <hr>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                              <a type="button" class="btn btn-sm btn-outline-secondary" href="{% url 'detail' id=postImage.id_post %}">View</a>
+                              {% comment %} <a class="btn btn-outline-secondary" href="/like_post?post_id={{ postImage.id_post }}" role="button"><i class="fa-solid fa-heart"></i></a> {% endcomment %}
+                              <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-share{{ postImage.id_post }}"><i class="fa-solid fa-share"></i></button>
+                              <a class="btn btn-outline-secondary" href="{% url 'download_images' post_id=postImage.id_post %}" role="button"><i class="fa-solid fa-download"></i></i></a>
+                            </div>
+                            <small class="text-body-secondary"><i class="fa-solid fa-calendar-days"></i>  {{ postImage.created_at|date:"F j, Y" }}</small>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                    
+                    <div class="modal fade" id="modal-share{{ postImage.id_post }}"  data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel{{ postImage.id_post }}" aria-hidden="true">
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h1 class="modal-title fs-5" id="modalLabel{{ postImage.id_post }}">Bagikan Konten</h1>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body row">   
+                                  <p>Bagikan konten ini melalui:</p>
+                                  <div class="input-group mb-3 col-12">
+                                      <input type="text" class="form-control" value="{{ request.build_absolute_uri }}" readonly>
+                                      <button class="btn btn-outline-secondary" onclick="copyToClipboard()"><i class="fa-solid fa-copy"></i></button>
+                                  </div>
+                    
+                                  <a type="button" class="btn btn-success col-2 mx-3" href="whatsapp://send?text={{ request.build_absolute_uri }}" data-action="share/whatsapp/share"><i class="fa-brands fa-whatsapp"></i></a>
+                                  <a type="button" class="btn btn-primary col-2 mx-3" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+                                  <a type="button" class="btn btn-info col-2 mx-3" href="https://t.me/share/url?url={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-telegram" ></i></a>
+                                  <a type="button" class="btn btn-danger col-2 mx-3" href="https://www.instagram.com/?url={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                    {% comment %} //modal end {% endcomment %}
                     {% endfor %}
                     
                     <h3>Post Video</h3>
@@ -18,7 +90,127 @@
                     {% for video in video %}
                     {% comment %} //card start {% endcomment %}
                     <div class="col-4">
-                        {% include "card_post/card_video.html" %}
+                      <div class="card" >
+                        <img src="{{video.thumbnail.url}}"  class="card-img-top img-thumbnail" alt="...">
+                        <div class="card-body">
+                          <div class="d-flex justify-content-between">
+                            <div>
+                              <h5 class="card-title">{{ video.judul }} </h5>
+                            </div>
+                            <div>
+                              {% if user == video.user %}
+                              <div class="dropdown">
+                                <a class="btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                  <i class="fa-solid fa-ellipsis"></i>
+                                </a>
+                              
+                                <ul class="dropdown-menu">
+                                  <li><a class="dropdown-item" href="{% url 'update_video' video_id=video.id %}"><i class="fa-regular fa-pen-to-square"></i> Update Konten</a></li>
+                                  <li>
+                                    <form action="{% url 'delete_video' video_id=video.id %}" method="post">
+                                      {% csrf_token %} 
+                                        <button class="btn dropdown-item" onclick="return confirm('Apakah Anda yakin ingin menghapus konten?')" type="submit"><i class="fa-solid fa-trash"></i> Hapus Konten</button></li>
+                                      </form> 
+                                  </li>
+                                </ul>
+                              </div>
+                              {% endif %}
+                            </div>
+                          </div
+                          <p class="card-text">{{ video.deskripsi|slice:":50" }}{% if video.deskripsi|length > 50 %}...{% endif %}</p>
+                          <hr>
+                          <div class="mb-2 d-flex justify-content-between">
+                            <div class="d-flex">
+                              <img src="{{profile.profile_image.url }}" alt="mdo" width="32" height="32" class="rounded-circle me-2">
+                              <p class="me-1">{{video.user}}</p>
+                            </div>
+                            <p class="text-body-light"><i class="fa-solid fa-heart"></i>  {{video.no_of_like}} </p>
+                          </div>
+                          <hr>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                              <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal{{ video.id }}">View</button>
+                              {% comment %} <a class="btn btn-outline-secondary" href="/like_video?video_id={{ video.id }}" role="button"><i class="fa-solid fa-heart"></i></a> {% endcomment %}
+                              <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-share{{ videpo }}"><i class="fa-solid fa-share"></i></button>
+                              
+                              {% if video.file_video.url is not None %}
+                                  <a class="btn btn-outline-secondary" href="{% url 'download_video' video_id=video.id %}" role="button"><i class="fa-solid fa-download"></i></i></a>
+                              {% else %}      
+                                  <a class="btn btn-outline-secondary" href="https://www.youtube.com/watch?v={{video.link_video}}" target="_blank" role="button"><i class="fa-brands fa-youtube"></i></a>
+                              {% endif %}
+                              
+                              
+                            </div>
+                            <small class="text-body-secondary"><i class="fa-solid fa-calendar-days"></i>  {{ video.created_at|date:"F j, Y" }}</small>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                    {% comment %} card end {% endcomment %}
+                    
+                    {% comment %} //modal start {% endcomment %}
+                    <div class="modal fade" id="modal{{ video.id }}"  data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel{{ video.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="modalLabel{{ video.id }}">{{video.judul}}</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          {% if video.file_video.url is not None %}
+                                <video controls width="470" height="auto">
+                                    <source src="{{ video.file_video.url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                          {% else %}      
+                                <iframe width="470" height="auto" src="https://www.youtube.com/embed/{{video.link_video}}" frameborder="0" allowfullscreen></iframe>
+                          {% endif %}
+                    
+                          <div class="mb-3 mt-4">
+                            <h3 class="card-title">{{ video.judul }}</h3>
+                          </div>
+                          <div>
+                            <h6>Deskripsi</h6>
+                            {%if video.lisensi_id.nama_lisensi == "CC BY"%}
+                                <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" > <a href="http://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"></a></p></p>
+                              {%elif video.lisensi_id.nama_lisensi == "CC BY ND"%}
+                                <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" ><a href="http://creativecommons.org/licenses/by-nd/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1"></a></p></p>
+                                {%elif video.lisensi_id.nama_lisensi == "CC BY SA"%}
+                                <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" > <a href="http://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1"></a></p></p>
+                              {%endif%}
+                            <p class="card-text">{{ video.deskripsi }}</p>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                    </div>
+                    
+                    <div class="modal fade" id="modal-share{{ videpo }}"  data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel{{ videpo }}" aria-hidden="true">
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h1 class="modal-title fs-5" id="modalLabel{{ videpo }}">Bagikan Konten</h1>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body row">   
+                                  <p>Bagikan konten ini melalui:</p>
+                                  <div class="input-group mb-3 col-12">
+                                      <input type="text" class="form-control" value="{{ request.build_absolute_uri }}" readonly>
+                                      <button class="btn btn-outline-secondary" onclick="copyToClipboard()"><i class="fa-solid fa-copy"></i></button>
+                                  </div>
+                    
+                                  <a type="button" class="btn btn-success col-2 mx-3" href="whatsapp://send?text={{ request.build_absolute_uri }}" data-action="share/whatsapp/share"><i class="fa-brands fa-whatsapp"></i></a>
+                                  <a type="button" class="btn btn-primary col-2 mx-3" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+                                  <a type="button" class="btn btn-info col-2 mx-3" href="https://t.me/share/url?url={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-telegram" ></i></a>
+                                  <a type="button" class="btn btn-danger col-2 mx-3" href="https://www.instagram.com/?url={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
                       {% comment %} //modal end {% endcomment %}
                     {% endfor %}
                     
@@ -26,7 +218,113 @@
                     {% for modul in modul %}
                     {% comment %} //card start {% endcomment %}
                     <div class="col-4">
-                      {% include "card_post/card_modul.html" %}
+                      <div class="card" >
+                        <img src="{{modul.thumbnail.url}}"  class="card-img-top img-thumbnail" alt="...">
+                        <div class="card-body">
+                          <div class="d-flex justify-content-between">
+                            <div>
+                              <h5 class="card-title">{{ modul.judul }} </h5>
+                            </div>
+                            <div>
+                              {% if user == modul.user %}
+                              <div class="dropdown">
+                                <a class="btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                  <i class="fa-solid fa-ellipsis"></i>
+                                </a>
+                              
+                                <ul class="dropdown-menu">
+                                  <li><a class="dropdown-item" href="{% url 'update_modul' modul_id=modul.id %}"><i class="fa-regular fa-pen-to-square"></i> Update Konten</a></li>
+                                  <li>
+                                    <form action="{% url 'delete_modul' modul_id=modul.id %}" method="post">
+                                      {% csrf_token %} 
+                                        <button class="btn dropdown-item" onclick="return confirm('Apakah Anda yakin ingin menghapus konten?')" type="submit"><i class="fa-solid fa-trash"></i> Hapus Konten</button></li>
+                                      </form> 
+                                  </li>
+                                </ul>
+                              </div>
+                              {% endif %}
+                            </div>
+                          </div
+                          <p class="card-text">{{ modul.deskripsi|slice:":50" }}{% if modul.deskripsi|length > 50 %}...{% endif %}</p>
+                          <hr>
+                          <div class="mb-2 d-flex justify-content-between">
+                            <div class="d-flex">
+                              <img src="{{profile.profile_image.url }}" alt="mdo" width="32" height="32" class="rounded-circle me-2">
+                              <p class="me-1">{{modul.user}}</p>
+                            </div>
+                            <p class="text-body-light"><i class="fa-solid fa-heart"></i>  {{modul.no_of_like}} </p>
+                          </div>
+                          <hr>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                              <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal{{ modul.id }}">View</button>
+                              {% comment %} <a class="btn btn-outline-secondary" href="/like_modul?modul_id={{ modul.id }}" role="button"><i class="fa-solid fa-heart"></i></a> {% endcomment %}
+                              <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modal-share{{ modul.id }}"><i class="fa-solid fa-share"></i></button>
+                              <a class="btn btn-outline-secondary" href="{{modul.file_modul.url}}" role="button" download><i class="fa-solid fa-download"></i></a>
+                            </div>
+                            <small class="text-body-secondary"><i class="fa-solid fa-calendar-days"></i>  {{ modul.created_at|date:"F j, Y" }}</small>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                    {% comment %} card end {% endcomment %}
+                    
+                    {% comment %} //modal start {% endcomment %}
+                    <div class="modal fade" id="modal{{ modul.id }}"  data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel{{ modul.id }}" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="modalLabel{{ modul.id }}">{{modul.judul}}</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">   
+                          <a target='_blank' href="{{modul.file_modul.url}}" type="button" class="btn btn-secondary" width="100%" height="600px"><i class="fa-solid fa-eye"></i> Lihat Modul</a>
+                    
+                          <div class="mb-3 mt-4">
+                            <h3 class="card-title">{{ modul.judul }}</h3>
+                          </div>
+                          <div>
+                            <h6>Deskripsi</h6>
+                            {%if modul.lisensi_id.nama_lisensi == "CC BY"%}
+                                <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" > <a href="http://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"></a></p></p>
+                              {%elif modul.lisensi_id.nama_lisensi == "CC BY ND"%}
+                                <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" ><a href="http://creativecommons.org/licenses/by-nd/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1"></a></p></p>
+                                {%elif modul.lisensi_id.nama_lisensi == "CC BY SA"%}
+                                <p class="lead " style="font-size:20px; font-weight: 400; line-height: 20px;"><p xmlns:cc="http://creativecommons.org/ns#" > <a href="http://creativecommons.org/licenses/by-sa/4.0/?ref=chooser-v1" target="_blank" rel="license noopener noreferrer" style="display:inline-block;"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1"><img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/sa.svg?ref=chooser-v1"></a></p></p>
+                              {%endif%}
+                            <p class="card-text">{{ modul.deskripsi }}</p>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                    </div>
+                    
+                    <div class="modal fade" id="modal-share{{ modul.id }}"  data-bs-keyboard="false" tabindex="-1" aria-labelledby="modalLabel{{ modul.id }}" aria-hidden="true">
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h1 class="modal-title fs-5" id="modalLabel{{ modul.id }}">Bagikan Konten</h1>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body row">   
+                                  <p>Bagikan konten ini melalui:</p>
+                                  <div class="input-group mb-3 col-12">
+                                      <input type="text" class="form-control" value="{{ request.build_absolute_uri }}" readonly>
+                                      <button class="btn btn-outline-secondary" onclick="copyToClipboard()"><i class="fa-solid fa-copy"></i></button>
+                                  </div>
+                    
+                                  <a type="button" class="btn btn-success col-2 mx-3" href="whatsapp://send?text={{ request.build_absolute_uri }}" data-action="share/whatsapp/share"><i class="fa-brands fa-whatsapp"></i></a>
+                                  <a type="button" class="btn btn-primary col-2 mx-3" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+                                  <a type="button" class="btn btn-info col-2 mx-3" href="https://t.me/share/url?url={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-telegram" ></i></a>
+                                  <a type="button" class="btn btn-danger col-2 mx-3" href="https://www.instagram.com/?url={{ request.build_absolute_uri }}" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
                     {% endfor %}
 
                     
